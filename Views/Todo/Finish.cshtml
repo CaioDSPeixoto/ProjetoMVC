@@ -1,0 +1,26 @@
+﻿@using ProjetoMvc.Models.Entities.ToDo
+
+@model Todo
+
+<div class="text-center">
+    <p class="display-8">Tem certeza que deseja finalizar a tarefa de ID <strong>[@Model.Id]</strong>?</p>
+</div>
+
+<div class="card">
+    <div class="card-body">
+        <h5 class="card-title">Titulo: @Model.Title</h5>
+        <p class="card-text">Criado em: @Model.CreateAt.ToString("yyyy-MM-dd HH:mm")</p>
+        <p class="card-text">Entregue em: @Model.DeadLine.ToString("yyyy-MM-dd")</p>
+        <p class="card-text">
+            Finalizado em: @(Model.FinishedAt?.ToString("yyyy-MM-dd") ?? "Não finalizado")
+        </p>
+    </div>
+</div>
+
+<form method="post">
+    <input type="hidden" name="Id" value="@Model.Id" />
+    <div class="mt-4 text-center">
+        <button type="submit" class="btn btn-success">Confirmar Finalização</button>
+        <a asp-controller="Todo" asp-action="Index" class="btn btn-secondary">Cancelar</a>
+    </div>
+</form>

@@ -1,0 +1,29 @@
+﻿@using ProjetoMvc.Models.Entities.ToDo
+
+@model Category
+
+@if (!ViewData.ModelState.IsValid)
+{
+    <div class="alert alert-danger">
+        @Html.ValidationSummary()
+    </div>
+}
+
+<div class="text-center">
+    <p class="display-8">Tem certeza que deseja deletar a categoria de ID <strong>[@Model.Id]</strong>?</p>
+</div>
+
+<div class="card">
+    <div class="card-body">
+        <h5 class="card-title">Titulo: @Model.Title</h5>
+    </div>
+</div>
+
+<form method="post">
+    <input type="hidden" name="Id" value="@Model.Id" />
+    <input type="hidden" name="Title" value="@Model.Title" />
+    <div class="mt-4 text-center">
+        <button type="submit" class="btn btn-danger">Confirmar Exclusão</button>
+        <a asp-controller="Category" asp-action="Index" class="btn btn-secondary">Cancelar</a>
+    </div>
+</form>

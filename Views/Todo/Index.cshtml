@@ -1,0 +1,171 @@
+﻿@using ProjetoMvc.Models.ViewModel
+
+@model TodoIndexViewModel
+
+@{
+    ViewData["Title"] = "Lista de tarefas";
+}
+
+<div class="text-center">
+    <h1 class="display-4">Listagem de tarefas</h1>
+</div>
+
+@using (Html.BeginForm("Index", "Todo", FormMethod.Get))
+{
+    <!-- Accordion para expandir/colapsar os filtros -->
+    <div class="accordion" id="filterAccordion">
+        <div class="accordion-item">
+            <h2 class="accordion-header" id="headingOne">
+                <button class="accordion-button @(Model.FiltersApplied ? "" : "collapsed")"
+                        type="button" data-bs-toggle="collapse" data-bs-target="#collapseOne"
+                        aria-expanded="@(Model.FiltersApplied ? "true" : "false")"
+                        aria-controls="collapseOne">
+                    Aplicar os Filtros
+                </button>
+            </h2>
+            <div id="collapseOne" class="accordion-collapse collapse @(Model.FiltersApplied ? "show" : "")"
+                 aria-labelledby="headingOne" data-bs-parent="#filterAccordion">
+                <div class="accordion-body">
+                    <!-- Filtros -->
+                    <div class="row mb-4">
+                        <div class="col-md-4">
+                            <label for="searchTitle" class="form-label">Título</label>
+                            <input type="text" id="searchTitle" name="searchTitle" class="form-control" placeholder="Pesquisar título" value="@Model.SearchTitle" />
+                        </div>
+
+                        <div class="col-md-4">
+                            <label for="startDate" class="form-label">Data de Início</label>
+                            <input type="date" id="startDate" name="startDate" class="form-control" value="@Model.StartDate?.ToString("yyyy-MM-dd")" />
+                        </div>
+
+                        <div class="col-md-4">
+                            <label for="endDate" class="form-label">Data de Fim</label>
+                            <input type="date" id="endDate" name="endDate" class="form-control" value="@Model.EndDate?.ToString("yyyy-MM-dd")" />
+                        </div>
+                    </div>
+
+                    <div class="row mb-4">
+                        <div class="col-md-4">
+                            <label for="isFinished" class="form-label">Status da Tarefa</label>
+                            @Html.DropDownList("isFinished", Model.IsFinishedSelectList, "Selecione o status", new { @class = "form-control" })
+                        </div>
+
+                        <div class="col-md-4">
+                            <label for="categoryFilter" class="form-label">Categoria</label>
+                            @Html.DropDownList("categoryFilter", Model.Categories, "Selecione a categoria", new { @class = "form-control" })
+                        </div>
+                    </div>
+
+                    <button type="submit" class="btn btn-primary mt-3">Filtrar</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+}
+
+@if (Model.Todos != null && Model.Todos.Any())
+{
+    <div class="row" style="margin-top: 1rem">
+        @foreach (var item in Model.Todos)
+        {
+            <div class="col-md-4 col-sm-6 mb-4">
+                <div class="card shadow d-flex flex-column">
+                    <div class="card-body">
+                        <h5 class="card-title text-center mb-3">@item.Title</h5>
+
+                        @* botão que irá abrir o modal com os detalhes da tarefa *@
+                        <div class="d-flex justify-content-center end-0 m-2">
+                            <button type="button" class="btn btn-link p-0" data-bs-toggle="modal" data-bs-target="#todoModal_@item.Id">
+                                <i class="bi bi-info-circle-fill text-dark"> Detalhes</i>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="card-footer d-flex justify-content-between pt-2">
+                        @if (item.FinishedAt.HasValue)
+                        {
+                            <span class="text-success">Tarefa finalizada</span>
+                        }
+                        else
+                        {
+                            <a asp-controller="Todo"
+                               asp-action="Finish"
+                               asp-route-id="@item.Id"
+                               class="btn btn-success btn-sm"
+                               style="width: 32%;"
+                               onclick="return confirm('Tem certeza que deseja finalizar esta tarefa?');">Finalizar</a>
+                        }
+
+                        <a asp-controller="Todo"
+                           asp-action="Delete"
+                           asp-route-id="@item.Id"
+                           class="btn btn-danger btn-sm"
+                           style="width: 32%;">Excluir</a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Modal -->
+            <div class="modal fade" id="todoModal_@item.Id" tabindex="-1" aria-labelledby="todoModalLabel_@item.Id" aria-hidden="true">
+                <div class="modal-dialog modal-dialog-centered">
+                    <div class="modal-content rounded-4 shadow-lg">
+                        <!-- Remover fundo do título e deixar o texto em escuro -->
+                        <div class="modal-header">
+                            <h5 class="modal-title text-dark" id="todoModalLabel_@item.Id">Detalhes da Tarefa: @item.Title</h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                        <div class="modal-body">
+                            @if (!string.IsNullOrWhiteSpace(item.Description))
+                            {
+                                <div class="mb-3">
+                                    <label for="description" class="form-label">Descrição</label>
+                                    <textarea id="description" class="form-control" rows="3" readonly>@item.Description</textarea>
+                                </div>
+                            }
+                            <div class="mb-3">
+                                <label for="createAt" class="form-label">Criado em</label>
+                                <input type="text" id="createAt" class="form-control" value="@item.CreateAt.ToString("dd-MM-yyyy HH:mm")" readonly />
+                            </div>
+                            <div class="mb-3">
+                                <label for="deadLine" class="form-label">Prazo até</label>
+                                <input type="text" id="deadLine" class="form-control" value="@item.DeadLine.ToString("dd-MM-yyyy HH:mm")" readonly />
+                            </div>
+                            <div class="mb-3">
+                                <label for="category" class="form-label">Categoria</label>
+                                <input type="text" id="category" class="form-control" value="@(item.Category?.Title ?? "Sem Categoria")" readonly />
+                            </div>
+                            @if (item.FinishedAt.HasValue)
+                            {
+                                <div class="mb-3">
+                                    <label for="finishedAt" class="form-label">Finalizado em</label>
+                                    <input type="text" id="finishedAt" class="form-control" value="@item.FinishedAt?.ToString("dd-MM-yyyy HH:mm")" readonly />
+                                </div>
+                            }
+                        </div>
+                        <div class="modal-footer justify-content-between">
+
+                            @if (!item.FinishedAt.HasValue)
+                            {
+                                <a asp-controller="Todo"
+                                   asp-action="Edit"
+                                   asp-route-id="@item.Id"
+                                   class="btn btn-warning">Editar</a>
+                            }
+
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Fechar</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+}
+else
+{
+    <p>Nenhuma tarefa cadastrada!</p>
+}
+<div class="text-center mt-4">
+    <a asp-controller="Todo" asp-action="Create" class="btn btn-primary btn-lg">
+        <i class="bi bi-plus-circle"></i> Nova Tarefa
+    </a>
+</div>

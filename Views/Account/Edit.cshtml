@@ -1,0 +1,74 @@
+﻿@using ProjetoMvc.Models.Enum
+@model ProjetoMvc.Models.Entities.User.UserAccount
+
+@{
+    ViewData["Title"] = "Edição de Usuário";
+}
+
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-md-8 col-lg-6">
+            <div class="card shadow-sm">
+                <div class="card-body">
+                    <h3 class="text-center mb-4">Edição de Usuário</h3>
+                    <form asp-action="Edit">
+                        <div asp-validation-summary="ModelOnly" class="alert alert-danger" role="alert"></div>
+
+                        <div class="mb-3">
+                            <label asp-for="FirstName" class="form-label"></label>
+                            <input asp-for="FirstName" class="form-control" placeholder="Nome" autocomplete="off" />
+                            <span asp-validation-for="FirstName" class="text-danger"></span>
+                        </div>
+
+                        <div class="mb-3">
+                            <label asp-for="LastName" class="form-label"></label>
+                            <input asp-for="LastName" class="form-control" placeholder="Sobrenome" autocomplete="off" />
+                            <span asp-validation-for="LastName" class="text-danger"></span>
+                        </div>
+
+                        <div class="mb-3">
+                            <label asp-for="Email" class="form-label"></label>
+                            <input asp-for="Email" class="form-control" placeholder="Email" autocomplete="off" />
+                            <span asp-validation-for="Email" class="text-danger"></span>
+                        </div>
+
+                        <div class="form-check mb-3">
+                            <input type="checkbox" id="changePasswordCheckbox" class="form-check-input" />
+                            <label for="changePasswordCheckbox" class="form-check-label">Alterar Senha</label>
+                        </div>
+
+                        <div class="mb-3">
+                            <label asp-for="Password" class="form-label"></label>
+                            <input asp-for="Password" id="passwordInput" class="form-control" placeholder="Senha" type="password" autocomplete="off" disabled />
+                            <span asp-validation-for="Password" class="text-danger"></span>
+                        </div>
+
+                        <div class="mb-3">
+                            <label asp-for="Permission" class="form-label">Permissão</label>
+                            @Html.DropDownListFor(
+                                     model => model.Permission,
+                                     new SelectList(Enum.GetValues(typeof(UserPermissionEnum))),
+                                     "-- Selecione --",
+                                     new { @class = "form-control" })
+                            <span asp-validation-for="Permission" class="text-danger"></span>
+                        </div>
+
+                        <div class="d-grid">
+                            <button type="submit" class="btn btn-primary">Salvar</button>
+                        </div>
+                    </form>
+
+                    <div class="mt-3 text-center">
+                        <a asp-action="Index" class="btn btn-outline-secondary">Voltar para a Lista</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+}

@@ -1,0 +1,92 @@
+﻿@using ProjetoMvc.Models.Dto
+@using System.Security.Claims
+
+@model ContadoresDto
+
+@{
+    ViewData["Title"] = "Tela Inicial";
+    var userPermission = User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.Role)?.Value;
+    bool isAdminOrDeveloper = userPermission == "Admin" || userPermission == "Developer";
+}
+
+<div class="home-index container text-center mt-5">
+    <h1 class="display-4">Bem vindo!!!</h1>
+
+    <div class="row mt-4">
+
+        @* card das tarefas *@
+        <div class="col-md-2">
+            <a asp-controller="Todo"
+               asp-action="Index"
+               class="card-link">
+                <div class="card shadow text-center">
+                    <i class="bi bi-list-task" style="font-size: 2rem; color: #007bff;"></i>
+                    <div class="card-body">
+                        <h5 class="card-title">Tarefas</h5>
+                        <p class="card-text">
+                            <span class="badge bg-primary" style="font-size: 1.2rem; display: flex; justify-content: center; align-items: center;">
+                                @Model.ContadorTodo
+                            </span>
+                        </p>
+                    </div>
+                </div>
+            </a>
+        </div>
+
+        @* card das categorias *@
+        <div class="col-md-2">
+            <a asp-controller="Category"
+               asp-action="Index"
+               class="card-link">
+                <div class="card shadow text-center">
+                    <i class="bi bi-tags" style="font-size: 2rem; color: #007bff;"></i>
+                    <div class="card-body">
+                        <h5 class="card-title">Categorias</h5>
+                        <p class="card-text">
+                            <span class="badge bg-primary" style="font-size: 1.2rem; display: flex; justify-content: center; align-items: center;">
+                                @Model.ContadorCategory
+                            </span>
+                        </p>
+                    </div>
+                </div>
+            </a>
+        </div>
+
+        @* Visivel apenas se o usuário for Admin ou Developer *@
+        @if (isAdminOrDeveloper)
+        {
+            @* card dos usuarios *@
+            <div class="col-md-2">
+                <a asp-controller="Account"
+                   asp-action="Index"
+                   class="card-link">
+                    <div class="card shadow text-center">
+                        <i class="bi bi-person-lock" style="font-size: 2rem; color: #007bff;"></i>
+                        <div class="card-body">
+                            <h5 class="card-title">Usuários</h5>
+                            <p class="card-text">
+                                <span class="badge bg-primary" style="font-size: 1.2rem; display: flex; justify-content: center; align-items: center;">
+                                    @Model.ContadorUser
+                                </span>
+                            </p>
+                        </div>
+                    </div>
+                </a>
+            </div>
+        }
+
+        @* card da privacy *@
+        <div class="col-md-2">
+            <a asp-controller="Home"
+               asp-action="Privacy"
+               class="card-link">
+                <div class="card shadow text-center">
+                    <i class="bi bi-book" style="font-size: 2rem; color: #007bff;"></i>
+                    <div class="card-body">
+                        <h5 class="card-title">Privacy</h5>
+                    </div>
+                </div>
+            </a>
+        </div>
+    </div>
+</div>
