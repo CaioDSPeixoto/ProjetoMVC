@@ -97,6 +97,7 @@ namespace ProjetoMvc.Controllers
             _context.Users.Update(user);
             await _context.SaveChangesAsync();
 
+            TempData["SuccessMessage"] = "Usuário bloqueado com sucesso.";
             return RedirectToAction(nameof(Index));
         }
 
@@ -125,6 +126,7 @@ namespace ProjetoMvc.Controllers
             _context.Users.Update(user);
             await _context.SaveChangesAsync();
 
+            TempData["SuccessMessage"] = "Usuário desbloqueado com sucesso.";
             return RedirectToAction(nameof(Index));
         }
 

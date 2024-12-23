@@ -1,5 +1,4 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using ProjetoMvc.Models.Entities.ToDo;
 using ProjetoMvc.Models.Enum;
 using ProjetoMvc.ORM.Entitie;
 using ProjetoMvc.Validators;

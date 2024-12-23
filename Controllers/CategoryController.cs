@@ -24,7 +24,7 @@ namespace ProjetoMvc.Controllers
         {
             ViewData["Title"] = "Criar Categoria";
 
-            return View("Form");
+            return View("Form", new Category());
         }
 
         [HttpPost]

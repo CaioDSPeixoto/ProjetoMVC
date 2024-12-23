@@ -103,7 +103,6 @@ namespace ProjetoMvc.Controllers
 
             var todo = await _context.Todos
              .Include(t => t.Category)
-             .Include(t => t.CreatedByUser)
              .Include(t => t.AssignedToUser)
              .FirstOrDefaultAsync(t => t.Id == id);
 
@@ -121,7 +120,16 @@ namespace ProjetoMvc.Controllers
         {
             if (ModelState.IsValid)
             {
-                _context.Todos.Update(todo);
+                var existingTodo = await _context.Todos
+                     .Include(t => t.Category)
+                     .Include(t => t.AssignedToUser)
+                     .FirstOrDefaultAsync(t => t.Id == todo.Id);
+
+                if (existingTodo == null)
+                    return NotFound();
+
+                AtualizaOsCamposDaTarefa(todo, existingTodo);
+
                 await _context.SaveChangesAsync();
 
                 return RedirectToAction(nameof(Index));
@@ -253,6 +261,15 @@ namespace ProjetoMvc.Controllers
         private async Task AdicionarViewBagDeCategorias(List<Category>? categories = null)
         {
             ViewBag.Categories = new SelectList(categories ?? await _context.Categories.ToListAsync(), "Id", "Title");
+        }
+
+        private void AtualizaOsCamposDaTarefa(Todo todo, Todo? existingTodo)
+        {
+            _context.Entry(existingTodo).CurrentValues.SetValues(todo);
+
+            // mantem os campos de usuário de criação e data de criação pois não podem mudar
+            _context.Entry(existingTodo).Property(u => u.CreatedByUserId).IsModified = false;
+            _context.Entry(existingTodo).Property(u => u.CreateAt).IsModified = false;
         }
 
         #endregion
