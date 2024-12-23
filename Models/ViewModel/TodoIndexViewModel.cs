@@ -7,6 +7,7 @@ namespace ProjetoMvc.Models.ViewModel
     public class TodoIndexViewModel : ToDoFilterDto
     {
         public List<Todo> Todos { get; set; }
+        public SelectList Users { get; set; }
         public SelectList IsFinishedSelectList { get; set; }
         public SelectList Categories { get; set; }
         public bool FiltersApplied { get; set; }

@@ -53,6 +53,12 @@
                             <span asp-validation-for="Permission" class="text-danger"></span>
                         </div>
 
+                        <div class="mb-3">
+                            <label for="BlockedUntil" class="form-label">Data de Bloqueio</label>
+                            <input asp-for="BlockedUntil" class="form-control" type="date" />
+                            <span asp-validation-for="BlockedUntil" class="text-danger"></span>
+                        </div>
+
                         <div class="d-grid">
                             <button type="submit" class="btn btn-primary">Salvar</button>
                         </div>

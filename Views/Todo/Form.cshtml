@@ -10,7 +10,7 @@
 
     <div class="form-group">
         <label asp-for="Title">Titulo</label>
-        <input asp-for="Title" type="text" class="form-control" required />
+        <input asp-for="Title" type="text" class="form-control" />
         <span asp-validation-for="Title" class="text-danger"></span>
     </div>
 
@@ -22,7 +22,7 @@
 
     <div class="form-group">
         <label asp-for="DeadLine">Data de finalização (entrega)</label>
-        <input asp-for="DeadLine" type="datetime-local" class="form-control" required />
+        <input asp-for="DeadLine" type="datetime-local" class="form-control" />
         <span asp-validation-for="DeadLine" class="text-danger"></span>
     </div>
 

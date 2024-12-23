@@ -1,6 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using ProjetoMvc.Models.Entities.ToDo;
 using ProjetoMvc.Models.Entities.User;
+using ProjetoMvc.ORM.Extension;
 
 namespace ProjetoMvc.ORM.Contexts
 {
@@ -16,27 +17,9 @@ namespace ProjetoMvc.ORM.Contexts
 
             DefinindoNomeDasTabelas(modelBuilder);
 
+            DefinindoTabelasParaNaoDeletarEmCasoDeRelacionamento(modelBuilder);
+
             ConfiguracoesPersonalizadasParaTabelas(modelBuilder);
-        }
-
-        private static void ConfiguracoesPersonalizadasParaTabelas(ModelBuilder modelBuilder)
-        {
-            // Configuração para evitar a exclusão de categorias com tarefas relacionadas
-            modelBuilder.Entity<Todo>()
-                .HasOne(todo => todo.Category)
-                .WithMany()
-                .HasForeignKey(todo => todo.CategoryId)
-                .OnDelete(DeleteBehavior.Restrict);
-
-            // Configuração para Permission
-            modelBuilder.Entity<UserAccount>()
-                .Property(user => user.Permission)
-                .HasConversion<string>(); // Caso use enum para Permission
-
-            // Configuração para Status
-            modelBuilder.Entity<Category>()
-                .Property(category => category.Status)
-                .HasConversion<string>(); // Caso use enum para Status
         }
 
         private static void DefinindoNomeDasTabelas(ModelBuilder modelBuilder)
@@ -45,6 +28,42 @@ namespace ProjetoMvc.ORM.Contexts
             modelBuilder.Entity<UserAccount>().ToTable("Todo");
             modelBuilder.Entity<Category>().ToTable("Category");
             modelBuilder.Entity<UserAccount>().ToTable("User");
+        }
+
+        private static void DefinindoTabelasParaNaoDeletarEmCasoDeRelacionamento(ModelBuilder modelBuilder)
+        {
+            modelBuilder.AplicandoValorParaDeleteBehavior(DeleteBehavior.Restrict);
+        }
+
+        private static void ConfiguracoesPersonalizadasParaTabelas(ModelBuilder modelBuilder)
+        {
+            // Configuração para evitar a exclusão de categorias com tarefas relacionadas
+            modelBuilder.Entity<Todo>()
+                .HasOne(todo => todo.Category)
+                .WithMany()
+                .HasForeignKey(todo => todo.CategoryId);
+
+            // Configuração para o campo CreatedByUser
+            modelBuilder.Entity<Todo>()
+                .HasOne(todo => todo.CreatedByUser)
+                .WithMany()
+                .HasForeignKey(todo => todo.CreatedByUserId);
+
+            // Configuração para o campo AssignedUser
+            modelBuilder.Entity<Todo>()
+                .HasOne(todo => todo.AssignedToUser)
+                .WithMany()
+                .HasForeignKey(todo => todo.AssignedToUserId);
+
+            // Configuração para Permission
+            modelBuilder.Entity<UserAccount>()
+                .Property(user => user.Permission)
+                .HasConversion<string>(); // Quando precisamos armazenar o valor do enum em um campo string no banco
+
+            // Configuração para Status
+            modelBuilder.Entity<Category>()
+                .Property(category => category.Status)
+                .HasConversion<string>(); // Quando precisamos armazenar o valor do enum em um campo string no banco
         }
     }
 }

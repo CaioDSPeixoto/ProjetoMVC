@@ -12,7 +12,6 @@
 
 @using (Html.BeginForm("Index", "Todo", FormMethod.Get))
 {
-    <!-- Accordion para expandir/colapsar os filtros -->
     <div class="accordion" id="filterAccordion">
         <div class="accordion-item">
             <h2 class="accordion-header" id="headingOne">
@@ -28,31 +27,41 @@
                 <div class="accordion-body">
                     <!-- Filtros -->
                     <div class="row mb-4">
-                        <div class="col-md-4">
+                        <div class="col-md-3">
                             <label for="searchTitle" class="form-label">Título</label>
                             <input type="text" id="searchTitle" name="searchTitle" class="form-control" placeholder="Pesquisar título" value="@Model.SearchTitle" />
                         </div>
 
-                        <div class="col-md-4">
+                        <div class="col-md-3">
                             <label for="startDate" class="form-label">Data de Início</label>
                             <input type="date" id="startDate" name="startDate" class="form-control" value="@Model.StartDate?.ToString("yyyy-MM-dd")" />
                         </div>
 
-                        <div class="col-md-4">
+                        <div class="col-md-3">
                             <label for="endDate" class="form-label">Data de Fim</label>
                             <input type="date" id="endDate" name="endDate" class="form-control" value="@Model.EndDate?.ToString("yyyy-MM-dd")" />
+                        </div>
+
+                        <div class="col-md-3">
+                            <label for="isFinished" class="form-label">Status da Tarefa</label>
+                            @Html.DropDownList("isFinished", Model.IsFinishedSelectList, "Selecione o status", new { @class = "form-control" })
                         </div>
                     </div>
 
                     <div class="row mb-4">
-                        <div class="col-md-4">
-                            <label for="isFinished" class="form-label">Status da Tarefa</label>
-                            @Html.DropDownList("isFinished", Model.IsFinishedSelectList, "Selecione o status", new { @class = "form-control" })
-                        </div>
-
-                        <div class="col-md-4">
+                        <div class="col-md-3">
                             <label for="categoryFilter" class="form-label">Categoria</label>
                             @Html.DropDownList("categoryFilter", Model.Categories, "Selecione a categoria", new { @class = "form-control" })
+                        </div>
+
+                        <div class="col-md-3">
+                            <label for="createdBy" class="form-label">Criado por</label>
+                            @Html.DropDownList("CreatedBy", Model.Users, "Selecione o usuário", new { @class = "form-control" })
+                        </div>
+
+                        <div class="col-md-3">
+                            <label for="assignedTo" class="form-label">Atribuído a</label>
+                            @Html.DropDownList("AssignedTo", Model.Users, "Selecione o usuário", new { @class = "form-control" })
                         </div>
                     </div>
 
@@ -61,7 +70,6 @@
             </div>
         </div>
     </div>
-
 }
 
 @if (Model.Todos != null && Model.Todos.Any())
@@ -72,14 +80,15 @@
             <div class="col-md-4 col-sm-6 mb-4">
                 <div class="card shadow d-flex flex-column">
                     <div class="card-body">
-                        <h5 class="card-title text-center mb-3">@item.Title</h5>
+                        <h5 class="card-title text-center mb-3">#@item.Id - @item.Title</h5>
 
-                        @* botão que irá abrir o modal com os detalhes da tarefa *@
+                        <!-- botão para abrir o modal -->
                         <div class="d-flex justify-content-center end-0 m-2">
                             <button type="button" class="btn btn-link p-0" data-bs-toggle="modal" data-bs-target="#todoModal_@item.Id">
                                 <i class="bi bi-info-circle-fill text-dark"> Detalhes</i>
                             </button>
                         </div>
+
                     </div>
                     <div class="card-footer d-flex justify-content-between pt-2">
                         @if (item.FinishedAt.HasValue)
@@ -109,7 +118,6 @@
             <div class="modal fade" id="todoModal_@item.Id" tabindex="-1" aria-labelledby="todoModalLabel_@item.Id" aria-hidden="true">
                 <div class="modal-dialog modal-dialog-centered">
                     <div class="modal-content rounded-4 shadow-lg">
-                        <!-- Remover fundo do título e deixar o texto em escuro -->
                         <div class="modal-header">
                             <h5 class="modal-title text-dark" id="todoModalLabel_@item.Id">Detalhes da Tarefa: @item.Title</h5>
                             <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
@@ -122,18 +130,31 @@
                                     <textarea id="description" class="form-control" rows="3" readonly>@item.Description</textarea>
                                 </div>
                             }
-                            <div class="mb-3">
-                                <label for="createAt" class="form-label">Criado em</label>
-                                <input type="text" id="createAt" class="form-control" value="@item.CreateAt.ToString("dd-MM-yyyy HH:mm")" readonly />
-                            </div>
-                            <div class="mb-3">
-                                <label for="deadLine" class="form-label">Prazo até</label>
-                                <input type="text" id="deadLine" class="form-control" value="@item.DeadLine.ToString("dd-MM-yyyy HH:mm")" readonly />
+                            <div class="row">
+                                <div class="col-md-6 mb-3">
+                                    <label for="createAt" class="form-label">Criado em</label>
+                                    <input type="text" id="createAt" class="form-control" value="@item.CreateAt.ToString("dd-MM-yyyy HH:mm")" readonly />
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <label for="deadLine" class="form-label">Prazo até</label>
+                                    <input type="text" id="deadLine" class="form-control" value="@item.DeadLine.ToString("dd-MM-yyyy HH:mm")" readonly />
+                                </div>
                             </div>
                             <div class="mb-3">
                                 <label for="category" class="form-label">Categoria</label>
                                 <input type="text" id="category" class="form-control" value="@(item.Category?.Title ?? "Sem Categoria")" readonly />
                             </div>
+                            <div class="row">
+                                <div class="col-md-6 mb-3">
+                                    <label for="createdBy" class="form-label">Criado por</label>
+                                    <input type="text" id="createdBy" class="form-control" value="@(item.CreatedByUser != null ? item.CreatedByUser.FirstName + " " + item.CreatedByUser.LastName : "N/A")" readonly />
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <label for="assignedTo" class="form-label">Atribuído a</label>
+                                    <input type="text" id="assignedTo" class="form-control" value="@(item.AssignedToUser != null ? item.AssignedToUser.FirstName + " " + item.AssignedToUser.LastName : "Não atribuído")" readonly />
+                                </div>
+                            </div>
+
                             @if (item.FinishedAt.HasValue)
                             {
                                 <div class="mb-3">
@@ -143,7 +164,6 @@
                             }
                         </div>
                         <div class="modal-footer justify-content-between">
-
                             @if (!item.FinishedAt.HasValue)
                             {
                                 <a asp-controller="Todo"
@@ -151,7 +171,6 @@
                                    asp-route-id="@item.Id"
                                    class="btn btn-warning">Editar</a>
                             }
-
                             <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Fechar</button>
                         </div>
                     </div>
@@ -164,6 +183,7 @@ else
 {
     <p>Nenhuma tarefa cadastrada!</p>
 }
+
 <div class="text-center mt-4">
     <a asp-controller="Todo" asp-action="Create" class="btn btn-primary btn-lg">
         <i class="bi bi-plus-circle"></i> Nova Tarefa

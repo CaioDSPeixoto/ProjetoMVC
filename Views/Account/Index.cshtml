@@ -10,6 +10,16 @@
 
 @if (Model != null && Model.Any())
 {
+    @if (TempData["ErrorMessage"] != null || TempData["SuccessMessage"] != null)
+    {
+        var alertType = TempData["ErrorMessage"] != null ? "alert-danger" : "alert-success";
+        var message = TempData["ErrorMessage"] ?? TempData["SuccessMessage"];
+
+        <div id="timer-alert" class="alert @alertType">
+            @message
+        </div>
+    }
+
     <div class="table-responsive">
         <table class="table table-striped table-hover">
             <thead>
@@ -18,24 +28,76 @@
                     <th scope="col">Sobrenome</th>
                     <th scope="col">Email</th>
                     <th scope="col">Permissão</th>
+                    <th scope="col">Bloqueado</th>
+                    <th scope="col">Bloqueado até</th>
                     <th scope="col" class="text-end">Ações</th>
                 </tr>
             </thead>
             <tbody>
                 @foreach (var item in Model)
                 {
+                    // modal de bloqueio de usuário
+                    <div class="modal fade" id="blockUserModal-@item.Id" tabindex="-1" aria-labelledby="blockUserModalLabel" aria-hidden="true">
+                        <div class="modal-dialog">
+                            <div class="modal-content">
+                                <form asp-controller="Account" asp-action="BlockUser" method="post">
+                                    <div class="modal-header">
+                                        <h5 class="modal-title" id="blockUserModalLabel">Bloquear Usuário</h5>
+                                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                    </div>
+                                    <div class="modal-body">
+                                        <p>Tem certeza que deseja bloquear o usuário <strong>@item.FirstName @item.LastName</strong>?</p>
+                                        <div class="mb-3">
+                                            <label for="blockedUntil-@item.Id" class="form-label">Bloqueado até (opcional)</label>
+                                            <input type="datetime-local" id="blockedUntil-@item.Id" name="blockedUntil" class="form-control" />
+                                        </div>
+                                        <input type="hidden" name="id" value="@item.Id" />
+                                    </div>
+                                    <div class="modal-footer">
+                                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                                        <button type="submit" class="btn btn-danger">Bloquear</button>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                    // fim do modal de bloqueio de usuário
+
                     <tr>
                         <td>@item.FirstName</td>
                         <td>@item.LastName</td>
                         <td>@item.Email</td>
                         <td>@item.Permission</td>
+                        <td>@(item.BlockedBy != null ? "Sim" : "Não")</td>
+                        <td>
+                            @(item.BlockedBy != null
+                                ? (item.BlockedUntil.HasValue
+                                ? item.BlockedUntil.Value.ToString("dd/MM/yyyy HH:mm")
+                                : "Permanente")
+                                : string.Empty)
+                        </td>
                         <td class="text-end">
                             <a asp-controller="Account"
-                                asp-action="Edit"
+                               asp-action="Edit"
                                asp-route-id="@item.Id"
                                class="btn btn-outline-primary btn-sm">
                                 <i class="bi bi-pencil"></i> Editar
                             </a>
+                            @if (item.BlockedBy != null)
+                            {
+                                <form asp-controller="Account" asp-action="UnblockUser" method="post" style="display:inline;">
+                                    <input type="hidden" name="id" value="@item.Id" />
+                                    <button type="submit" class="btn btn-outline-success btn-sm">
+                                        <i class="bi bi-unlock"></i> Desbloquear
+                                    </button>
+                                </form>
+                            }
+                            else
+                            {
+                                <button type="button" class="btn btn-outline-danger btn-sm" data-bs-toggle="modal" data-bs-target="#blockUserModal-@item.Id">
+                                    <i class="bi bi-lock"></i> Bloquear
+                                </button>
+                            }
                         </td>
                     </tr>
                 }

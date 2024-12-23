@@ -1,9 +1,7 @@
 using Microsoft.AspNetCore.Authentication.Cookies;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.EntityFrameworkCore;
 using ProjetoMvc.Models.Enum;
 using ProjetoMvc.ORM.Contexts;
-using ProjetoMvc.Validators;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -32,8 +30,6 @@ builder.Services.AddDbContext<AppDbContext>(options =>
 {
     options.UseSqlite(builder.Configuration.GetConnectionString("DefaultConnection"));
 });
-
-//builder.Services.AddSingleton<IAuthorizationHandler, PermissionHandler>();
 
 var app = builder.Build();
 

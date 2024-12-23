@@ -8,7 +8,6 @@ using ProjetoMvc.Models.Entities.ToDo;
 using ProjetoMvc.Models.ViewModel;
 using ProjetoMvc.ORM.Contexts;
 using System.Diagnostics;
-using System.Linq;
 using System.Security.Claims;
 
 namespace ProjetoMvc.Controllers
@@ -22,22 +21,27 @@ namespace ProjetoMvc.Controllers
         #region Métodos Publicos
         public async Task<IActionResult> Index(ToDoFilterDto filtro)
         {
-            var tarefasQuery = _context.Todos.Include(i => i.Category).AsQueryable();
+            var tarefasQuery = _context.Todos
+                .Include(i => i.Category) // categoria da tarefa
+                .Include(i => i.CreatedByUser) // quem criou a tarefa
+                .Include(i => i.AssignedToUser) // para quem está atribuido (pode ser null)
+                .AsQueryable();
 
             tarefasQuery = AplicandoFiltrosParaBuscaDasTarefas(filtro, tarefasQuery);
 
-            var tarefas = await tarefasQuery.ToListAsync();
-
             var viewModel = new TodoIndexViewModel
             {
-                Todos = tarefas,
+                Todos = await tarefasQuery.ToListAsync(),
+                Users = new SelectList(await _context.Users.Select(u => new { u.Id, FullName = u.FirstName + " " + u.LastName }).ToListAsync(), "Id", "FullName"),
+                Categories = new SelectList(await _context.Categories.ToListAsync(), "Id", "Title", filtro.CategoryFilter),
                 SearchTitle = filtro.SearchTitle,
                 StartDate = filtro.StartDate,
                 EndDate = filtro.EndDate,
                 IsFinished = filtro.IsFinished,
                 CategoryFilter = filtro.CategoryFilter,
                 IsFinishedSelectList = new SelectList(new[] { new { Value = "true", Text = "Finalizado" }, new { Value = "false", Text = "Não Finalizado" } }, "Value", "Text", filtro.IsFinished?.ToString()),
-                Categories = new SelectList(await _context.Categories.ToListAsync(), "Id", "Title", filtro.CategoryFilter),
+                CreatedBy = filtro.CreatedBy,
+                AssignedTo = filtro.AssignedTo,
                 FiltersApplied = VerificaSePossuiFiltroAplicado(filtro)
             };
 
@@ -57,10 +61,8 @@ namespace ProjetoMvc.Controllers
                 return RedirectToAction("Create", "Category");
             }
 
-            var users = await _context.Users.ToListAsync();
-
-            AdicionarViewBagDeCategorias(categories);
-            AdicionarViewBagDeUsuarios(users);
+            await AdicionarViewBagDeCategorias(categories);
+            await AdicionarViewBagDeUsuarios();
 
             return View("Form");
         }
@@ -89,12 +91,8 @@ namespace ProjetoMvc.Controllers
 
             ViewData["Title"] = "Criar Tarefa";
 
-            // Recarregar categorias em caso de erro
-            var categories = await _context.Categories.ToListAsync();
-            var users = await _context.Users.ToListAsync();
-
-            AdicionarViewBagDeCategorias(categories);
-            AdicionarViewBagDeUsuarios(users);
+            await AdicionarViewBagDeCategorias();
+            await AdicionarViewBagDeUsuarios();
 
             return View("Form", todo); // passando na mão a view "Form" por ser uma view para vários usos (criação e edição)
         }
@@ -103,14 +101,17 @@ namespace ProjetoMvc.Controllers
         {
             ViewData["Title"] = "Editar Tarefa";
 
-            var todo = await _context.Todos.FindAsync(id);
+            var todo = await _context.Todos
+             .Include(t => t.Category)
+             .Include(t => t.CreatedByUser)
+             .Include(t => t.AssignedToUser)
+             .FirstOrDefaultAsync(t => t.Id == id);
 
             if (todo == null)
                 return NotFound();
 
-            // Buscar categorias do banco
-            var categories = await _context.Categories.ToListAsync();
-            ViewBag.Categories = new SelectList(categories, "Id", "Title");
+            await AdicionarViewBagDeCategorias();
+            await AdicionarViewBagDeUsuarios();
 
             return View("Form", todo); // passando na mão a view "Form" por ser uma view para vários usos (criação e edição)
         }
@@ -128,9 +129,8 @@ namespace ProjetoMvc.Controllers
 
             ViewData["Title"] = "Editar Tarefa";
 
-            // Recarregar categorias em caso de erro
-            var categories = await _context.Categories.ToListAsync();
-            ViewBag.Categories = new SelectList(categories, "Id", "Title");
+            await AdicionarViewBagDeCategorias();
+            await AdicionarViewBagDeUsuarios();
 
             return View("Form", todo); // passando na mão a view "Form" por ser uma view para vários usos (criação e edição)
         }
@@ -215,16 +215,34 @@ namespace ProjetoMvc.Controllers
                 }
             }
 
+            if (filtro.CreatedBy.HasValue)
+            {
+                tarefasQuery = tarefasQuery.Where(t => t.CreatedByUserId == filtro.CreatedBy);
+            }
+
+            if (filtro.AssignedTo.HasValue)
+            {
+                tarefasQuery = tarefasQuery.Where(t => t.AssignedToUserId == filtro.AssignedTo);
+            }
+
             return tarefasQuery;
         }
 
         private static bool VerificaSePossuiFiltroAplicado(ToDoFilterDto filtro)
         {
-            return filtro.SearchTitle != null || filtro.StartDate.HasValue || filtro.EndDate.HasValue || filtro.IsFinished.HasValue || filtro.CategoryFilter.HasValue;
+            return filtro.SearchTitle != null ||
+                filtro.StartDate.HasValue ||
+                filtro.EndDate.HasValue ||
+                filtro.IsFinished.HasValue ||
+                filtro.CategoryFilter.HasValue ||
+                filtro.AssignedTo.HasValue ||
+                filtro.CreatedBy.HasValue;
         }
 
-        private void AdicionarViewBagDeUsuarios(List<Models.Entities.User.UserAccount> users)
+        private async Task AdicionarViewBagDeUsuarios()
         {
+            var users = await _context.Users.ToListAsync();
+
             ViewBag.Users = new SelectList(users.Select(u => new
             {
                 u.Id,
@@ -232,9 +250,9 @@ namespace ProjetoMvc.Controllers
             }), "Id", "FullName");
         }
 
-        private void AdicionarViewBagDeCategorias(List<Category> categories)
+        private async Task AdicionarViewBagDeCategorias(List<Category>? categories = null)
         {
-            ViewBag.Categories = new SelectList(categories, "Id", "Title");
+            ViewBag.Categories = new SelectList(categories ?? await _context.Categories.ToListAsync(), "Id", "Title");
         }
 
         #endregion

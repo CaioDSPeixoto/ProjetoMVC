@@ -7,5 +7,7 @@
         public DateTime? EndDate { get; set; }
         public bool? IsFinished { get; set; }
         public int? CategoryFilter { get; set; }
+        public int? CreatedBy { get; set; }
+        public int? AssignedTo { get; set; }
     }
 }

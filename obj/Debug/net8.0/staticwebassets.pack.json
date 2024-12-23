@@ -2,7 +2,7 @@
   "Files": [
     {
       "Id": "C:\\Users\\caiow\\source\\repos\\ProjetoMvc\\ProjetoMvc\\obj\\Debug\\net8.0\\scopedcss\\projectbundle\\ProjetoMvc.bundle.scp.css",
-      "PackagePath": "staticwebassets\\ProjetoMvc.bundle.scp.css"
+      "PackagePath": "staticwebassets\\ProjetoMvc.mdafj9ob3l.bundle.scp.css"
     },
     {
       "Id": "C:\\Users\\caiow\\source\\repos\\ProjetoMvc\\ProjetoMvc\\wwwroot\\css\\site.css",
@@ -243,6 +243,10 @@
     {
       "Id": "C:\\Users\\caiow\\source\\repos\\ProjetoMvc\\ProjetoMvc\\wwwroot\\lib\\jquery\\dist\\jquery.min.map",
       "PackagePath": "staticwebassets\\lib\\jquery\\dist\\jquery.min.map"
+    },
+    {
+      "Id": "obj\\Debug\\net8.0\\staticwebassets\\msbuild.ProjetoMvc.Microsoft.AspNetCore.StaticWebAssetEndpoints.props",
+      "PackagePath": "build\\Microsoft.AspNetCore.StaticWebAssetEndpoints.props"
     },
     {
       "Id": "obj\\Debug\\net8.0\\staticwebassets\\msbuild.ProjetoMvc.Microsoft.AspNetCore.StaticWebAssets.props",

@@ -1,6 +1,8 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using ProjetoMvc.Models.Entities.ToDo;
 using ProjetoMvc.Models.Enum;
 using ProjetoMvc.ORM.Entitie;
+using ProjetoMvc.Validators;
 using System.ComponentModel.DataAnnotations;
 
 namespace ProjetoMvc.Models.Entities.User
@@ -8,6 +10,7 @@ namespace ProjetoMvc.Models.Entities.User
     [Index(nameof(Email), IsUnique = true)]
     public class UserAccount : EntityBase
     {
+        #region Atributos normais do UserAccount
         [Display(Name = "Primeiro Nome")]
         [Required(ErrorMessage = "O campo {0} é obrigatório.")]
         public string FirstName { get; set; } = string.Empty;
@@ -27,5 +30,15 @@ namespace ProjetoMvc.Models.Entities.User
 
         [Display(Name = "Permissão")]
         public UserPermissionEnum Permission { get; set; } = UserPermissionEnum.Default;
+        #endregion
+
+        #region Bloqueio de login
+        [Display(Name = "Bloqueado Por")]
+        public UserAccount? BlockedBy { get; set; }
+
+        [Display(Name = "Bloqueado Até")]
+        [FututeOrPresent]
+        public DateTime? BlockedUntil { get; set; }
+        #endregion
     }
 }
