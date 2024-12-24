@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using ProjetoMvc.Models;
 using ProjetoMvc.Models.Entities.ToDo;
+using ProjetoMvc.Models.Helper;
 using ProjetoMvc.ORM.Contexts;
 using System.Diagnostics;
 
@@ -35,6 +36,7 @@ namespace ProjetoMvc.Controllers
                 await _context.Categories.AddAsync(category);
                 await _context.SaveChangesAsync();
 
+                MessageHelper.Success(TempData, "Categoria criada com sucesso.");
                 return RedirectToAction(nameof(Index));
             }
 
@@ -63,6 +65,7 @@ namespace ProjetoMvc.Controllers
                 _context.Categories.Update(category);
                 await _context.SaveChangesAsync();
 
+                MessageHelper.Success(TempData, "Categoria editada com sucesso.");
                 return RedirectToAction(nameof(Index));
             }
 
@@ -87,7 +90,7 @@ namespace ProjetoMvc.Controllers
 
             if (hasTodos)
             {
-                ModelState.AddModelError(string.Empty, "Não é possível excluir a categoria, pois existem tarefas associadas a ela.");
+                MessageHelper.Error(TempData, "Não é possível excluir a categoria, pois existem tarefas associadas a ela.");
 
                 ViewData["Title"] = "Excluir Categoria";
                 return View(category);
@@ -96,6 +99,7 @@ namespace ProjetoMvc.Controllers
             _context.Categories.Remove(category);
             await _context.SaveChangesAsync();
 
+            MessageHelper.Success(TempData, "Categoria deletada com sucesso.");
             return RedirectToAction(nameof(Index));
         }
 

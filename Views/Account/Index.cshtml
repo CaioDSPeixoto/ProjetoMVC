@@ -1,4 +1,5 @@
-﻿@model IEnumerable<ProjetoMvc.Models.Entities.User.UserAccount>
+﻿@using ProjetoMvc.Models.Helper
+@model IEnumerable<ProjetoMvc.Models.Entities.User.UserAccount>
 
 @{
     ViewData["Title"] = "Lista de Usuários";
@@ -10,16 +11,6 @@
 
 @if (Model != null && Model.Any())
 {
-    @if (TempData["ErrorMessage"] != null || TempData["SuccessMessage"] != null)
-    {
-        var alertType = TempData["ErrorMessage"] != null ? "alert-danger" : "alert-success";
-        var message = TempData["ErrorMessage"] ?? TempData["SuccessMessage"];
-
-        <div id="timer-alert" class="alert @alertType">
-            @message
-        </div>
-    }
-
     <div class="table-responsive">
         <table class="table table-striped table-hover">
             <thead>

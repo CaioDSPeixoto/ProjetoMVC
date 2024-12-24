@@ -1,10 +1,13 @@
 ﻿@using ProjetoMvc.Models.Entities.ToDo
+@using ProjetoMvc.Models.Helper
 
 @model Todo
 
 <div class="text-center">
     <h1 class="display-4">@ViewData["Title"]</h1>
 </div>
+
+@Html.RenderAlert(TempData);
 
 <form method="post">
 

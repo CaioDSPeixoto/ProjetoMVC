@@ -5,6 +5,7 @@ using Microsoft.EntityFrameworkCore;
 using ProjetoMvc.Models;
 using ProjetoMvc.Models.Dto;
 using ProjetoMvc.Models.Entities.ToDo;
+using ProjetoMvc.Models.Helper;
 using ProjetoMvc.Models.ViewModel;
 using ProjetoMvc.ORM.Contexts;
 using System.Diagnostics;
@@ -57,7 +58,7 @@ namespace ProjetoMvc.Controllers
 
             if (categories == null || categories.Count == 0)
             {
-                TempData["Error"] = "Nenhuma categoria encontrada. Crie uma categoria antes de adicionar uma tarefa.";
+                MessageHelper.Error(TempData, "Nenhuma categoria encontrada. Crie uma categoria antes de adicionar uma tarefa.");
                 return RedirectToAction("Create", "Category");
             }
 
@@ -77,7 +78,7 @@ namespace ProjetoMvc.Controllers
 
                 if (string.IsNullOrEmpty(userIdClaim) || !int.TryParse(userIdClaim, out int userId))
                 {
-                    TempData["Error"] = "Usuário não autenticado. Faça login antes de criar uma tarefa.";
+                    MessageHelper.Error(TempData, "Usuário não autenticado. Faça login antes de criar uma tarefa.");
                     return RedirectToAction("Index");
                 }
 
@@ -86,6 +87,7 @@ namespace ProjetoMvc.Controllers
                 await _context.Todos.AddAsync(todo);
                 await _context.SaveChangesAsync();
 
+                MessageHelper.Success(TempData, "Tarefa criada com sucesso.");
                 return RedirectToAction(nameof(Index)); // view que será feito o redirect
             }
 
@@ -132,6 +134,7 @@ namespace ProjetoMvc.Controllers
 
                 await _context.SaveChangesAsync();
 
+                MessageHelper.Success(TempData, "Tarefa editado com sucesso.");
                 return RedirectToAction(nameof(Index));
             }
 
@@ -157,6 +160,7 @@ namespace ProjetoMvc.Controllers
             _context.Todos.Remove(todo);
             await _context.SaveChangesAsync();
 
+            MessageHelper.Success(TempData, "Tarefa deletada com sucesso.");
             return RedirectToAction(nameof(Index));
         }
 
@@ -174,6 +178,7 @@ namespace ProjetoMvc.Controllers
             _context.Todos.Update(todo);
             await _context.SaveChangesAsync();
 
+            MessageHelper.Success(TempData, "Tarefa finalizada com sucesso.");
             return RedirectToAction(nameof(Index));
         }
 

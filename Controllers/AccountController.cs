@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using ProjetoMvc.Models;
 using ProjetoMvc.Models.Entities.User;
+using ProjetoMvc.Models.Helper;
 using ProjetoMvc.ORM.Contexts;
 using System.Security.Claims;
 
@@ -41,13 +42,16 @@ namespace ProjetoMvc.Controllers
             {
                 var existingUser = await _context.Users.Include(i => i.BlockedBy).FirstOrDefaultAsync(f => f.Id == user.Id);
                 if (existingUser == null)
-                    return NotFound();
+                {
+                    MessageHelper.Error(TempData, "Usuário não encontrado.");
+                    return RedirectToAction(nameof(Index));
+                }
 
                 if (user.BlockedUntil.HasValue && existingUser.BlockedBy == null)
                 {
                     if (!ValidarUsuarioLogado(user.Id, out string errorMessage))
                     {
-                        TempData["ErrorMessage"] = errorMessage;
+                        MessageHelper.Error(TempData, errorMessage);
                         return RedirectToAction(nameof(Index));
                     }
 
@@ -58,7 +62,7 @@ namespace ProjetoMvc.Controllers
 
                 await _context.SaveChangesAsync();
 
-                TempData["SuccessMessage"] = "Usuário alterado com sucesso.";
+                MessageHelper.Success(TempData, "Usuário alterado com sucesso.");
                 return RedirectToAction(nameof(Index));
             }
 
@@ -73,21 +77,21 @@ namespace ProjetoMvc.Controllers
             var user = await _context.Users.Include(u => u.BlockedBy).FirstOrDefaultAsync(u => u.Id == id);
             if (user == null)
             {
-                TempData["ErrorMessage"] = "Usuário não encontrado.";
+                MessageHelper.Error(TempData, "Usuário não encontrado.");
                 return RedirectToAction(nameof(Index));
             }
 
             // Validar se o usuário logado pode bloquear
             if (!ValidarUsuarioLogado(id, out string errorMessage))
             {
-                TempData["ErrorMessage"] = errorMessage;
+                MessageHelper.Error(TempData, errorMessage);
                 return RedirectToAction(nameof(Index));
             }
 
             var idUsuarioLogadoString = User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.NameIdentifier)?.Value;
             if (string.IsNullOrEmpty(idUsuarioLogadoString) || !int.TryParse(idUsuarioLogadoString, out int idUsuarioLogado))
             {
-                TempData["ErrorMessage"] = "Usuário logado inválido.";
+                MessageHelper.Error(TempData, "Usuário logado inválido.");
                 return RedirectToAction(nameof(Index));
             }
 
@@ -97,7 +101,7 @@ namespace ProjetoMvc.Controllers
             _context.Users.Update(user);
             await _context.SaveChangesAsync();
 
-            TempData["SuccessMessage"] = "Usuário bloqueado com sucesso.";
+            MessageHelper.Success(TempData, "Usuário bloqueado com sucesso.");
             return RedirectToAction(nameof(Index));
         }
 
@@ -108,14 +112,14 @@ namespace ProjetoMvc.Controllers
 
             if (user == null)
             {
-                TempData["ErrorMessage"] = "Usuário não encontrado.";
+                MessageHelper.Error(TempData, "Usuário não encontrado.");
                 return RedirectToAction(nameof(Index));
             }
 
             // Validar se o usuário logado pode desbloquear
             if (!ValidarUsuarioLogado(id, out string errorMessage))
             {
-                TempData["ErrorMessage"] = errorMessage;
+                MessageHelper.Error(TempData, errorMessage);
                 return RedirectToAction(nameof(Index));
             }
 
@@ -126,7 +130,7 @@ namespace ProjetoMvc.Controllers
             _context.Users.Update(user);
             await _context.SaveChangesAsync();
 
-            TempData["SuccessMessage"] = "Usuário desbloqueado com sucesso.";
+            MessageHelper.Success(TempData, "Usuário desbloqueado com sucesso.");
             return RedirectToAction(nameof(Index));
         }
 
@@ -156,12 +160,12 @@ namespace ProjetoMvc.Controllers
                     await _context.SaveChangesAsync();
 
                     ModelState.Clear();
-                    TempData["SuccessMessage"] = $"O usuário {account.FirstName} {account.LastName} foi registrado com sucesso! Por favor, faça o login.";
+                    MessageHelper.Success(TempData, $"O usuário {account.FirstName} {account.LastName} foi registrado com sucesso! Por favor, faça o login.");
                     return RedirectToAction(nameof(Login));
                 }
                 catch (DbUpdateException)
                 {
-                    ModelState.AddModelError("", "Por favor, use um email e senha válidos.");
+                    MessageHelper.Error(TempData, "Por favor, use um email e senha válidos.");
                     return View(registration);
                 }
             }
@@ -194,14 +198,14 @@ namespace ProjetoMvc.Controllers
                         {
                             // Bloqueio temporário com data futura
                             string mensagemBloqueio = $"Sua conta está bloqueada até {user.BlockedUntil.Value:dd/MM/yyyy HH:mm}.";
-                            ModelState.AddModelError("", mensagemBloqueio);
+                            MessageHelper.Error(TempData, mensagemBloqueio);
                         }
 
                         // Bloqueio permanente (sem data de desbloqueio)
                         if (!user.BlockedUntil.HasValue)
                         {
                             string mensagemBloqueioPermanente = "Sua conta está bloqueada permanentemente. Entre em contato com o suporte.";
-                            ModelState.AddModelError("", mensagemBloqueioPermanente);
+                            MessageHelper.Error(TempData, mensagemBloqueioPermanente);
                         }
 
                         return View(login);
@@ -222,16 +226,17 @@ namespace ProjetoMvc.Controllers
                         var claimsIdentity = new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme);
                         await HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, new ClaimsPrincipal(claimsIdentity));
 
+                        MessageHelper.Success(TempData, $"Seja bem vindo(a) {user.FirstName}!");
                         return RedirectToAction("Index", "Home"); // manda para a tela inicial em caso de sucesso do login
                     }
                     else
                     {
-                        ModelState.AddModelError("", mensagemGenericaDeErro);
+                        MessageHelper.Error(TempData, mensagemGenericaDeErro);
                     }
                 }
                 else
                 {
-                    ModelState.AddModelError("", mensagemGenericaDeErro);
+                    MessageHelper.Error(TempData, mensagemGenericaDeErro);
                 }
             }
 
@@ -241,6 +246,7 @@ namespace ProjetoMvc.Controllers
         public async Task<IActionResult> LogOut()
         {
             await HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
+            MessageHelper.Success(TempData, "Até a próxima...");
             return RedirectToAction(nameof(Login));
         }
 
