@@ -27,33 +27,6 @@
             <tbody>
                 @foreach (var item in Model)
                 {
-                    // modal de bloqueio de usuário
-                    <div class="modal fade" id="blockUserModal-@item.Id" tabindex="-1" aria-labelledby="blockUserModalLabel" aria-hidden="true">
-                        <div class="modal-dialog">
-                            <div class="modal-content">
-                                <form asp-controller="Account" asp-action="BlockUser" method="post">
-                                    <div class="modal-header">
-                                        <h5 class="modal-title" id="blockUserModalLabel">Bloquear Usuário</h5>
-                                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                                    </div>
-                                    <div class="modal-body">
-                                        <p>Tem certeza que deseja bloquear o usuário <strong>@item.FirstName @item.LastName</strong>?</p>
-                                        <div class="mb-3">
-                                            <label for="blockedUntil-@item.Id" class="form-label">Bloqueado até (opcional)</label>
-                                            <input type="datetime-local" id="blockedUntil-@item.Id" name="blockedUntil" class="form-control" />
-                                        </div>
-                                        <input type="hidden" name="id" value="@item.Id" />
-                                    </div>
-                                    <div class="modal-footer">
-                                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
-                                        <button type="submit" class="btn btn-danger">Bloquear</button>
-                                    </div>
-                                </form>
-                            </div>
-                        </div>
-                    </div>
-                    // fim do modal de bloqueio de usuário
-
                     <tr>
                         <td>@item.FirstName</td>
                         <td>@item.LastName</td>
@@ -91,6 +64,33 @@
                             }
                         </td>
                     </tr>
+
+                    <!-- Modal de bloqueio de usuário -->
+                    <div class="modal fade" id="blockUserModal-@item.Id" tabindex="-1" aria-labelledby="blockUserModalLabel" aria-hidden="true">
+                        <div class="modal-dialog">
+                            <div class="modal-content">
+                                <form asp-controller="Account" asp-action="BlockUser" method="post">
+                                    <div class="modal-header">
+                                        <h5 class="modal-title" id="blockUserModalLabel">Bloquear Usuário</h5>
+                                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                    </div>
+                                    <div class="modal-body">
+                                        <p>Tem certeza que deseja bloquear o usuário <strong>@item.FirstName @item.LastName</strong>?</p>
+                                        <div class="mb-3">
+                                            <label for="blockedUntil-@item.Id" class="form-label">Bloqueado até (opcional)</label>
+                                            <input type="datetime-local" id="blockedUntil-@item.Id" name="blockedUntil" class="form-control" />
+                                        </div>
+                                        <input type="hidden" name="id" value="@item.Id" />
+                                    </div>
+                                    <div class="modal-footer">
+                                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                                        <button type="submit" class="btn btn-danger">Bloquear</button>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- Fim do modal de bloqueio de usuário -->
                 }
             </tbody>
         </table>

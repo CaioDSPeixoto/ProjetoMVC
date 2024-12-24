@@ -22,7 +22,9 @@ namespace ProjetoMvc.Models
         [DataType(DataType.Password)]
         public string Password { get; set; } = string.Empty;
 
+        [Display(Name = "Confirmação de senha")]
         [Compare("Password", ErrorMessage = "Por favor, confirme a sua senha.")]
+        [Required(ErrorMessage = "O campo {0} é obrigatório.")]
         [DataType(DataType.Password)]
         public string ConfirmPassword { get; set; } = string.Empty;
     }

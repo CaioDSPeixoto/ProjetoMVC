@@ -29,4 +29,17 @@ namespace ProjetoMvc.Validators
             return Task.CompletedTask;
         }
     }
+
+    public static class UserExtensions
+    {
+        public static bool IsAdminOrDeveloper(this ClaimsPrincipal user)
+        {
+            var userPermission = user.Claims.FirstOrDefault(c => c.Type == ClaimTypes.Role)?.Value;
+            if (Enum.TryParse(userPermission, out UserPermissionEnum permission))
+            {
+                return permission == UserPermissionEnum.Admin || permission == UserPermissionEnum.Developer;
+            }
+            return false;
+        }
+    }
 }

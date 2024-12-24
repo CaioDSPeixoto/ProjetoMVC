@@ -1,8 +1,11 @@
 ﻿@using ProjetoMvc.Models.Entities.ToDo
+@using System.Security.Claims
+@using ProjetoMvc.Validators
 @model List<Category>
 
 @{
     ViewData["Title"] = "Lista de Categorias";
+    bool isAdminOrDeveloper = User.IsAdminOrDeveloper();
 }
 
 <div class="text-center mb-5">
@@ -18,7 +21,10 @@
                     <th scope="col">ID</th>
                     <th scope="col">Título</th>
                     <th scope="col">Status</th>
-                    <th scope="col" class="text-end">Ações</th>
+                    @if (isAdminOrDeveloper)
+                    {
+                        <th scope="col" class="text-end">Ações</th>
+                    }
                 </tr>
             </thead>
             <tbody>
@@ -28,20 +34,25 @@
                         <td>@item.Id</td>
                         <td>@item.Title</td>
                         <td>@item.Status</td>
-                        <td class="text-end">
-                            <a asp-controller="Category"
-                               asp-action="Edit"
-                               asp-route-id="@item.Id"
-                               class="btn btn-outline-primary btn-sm">
-                               <i class="bi bi-pencil"></i> Editar
-                            </a>
-                            <a asp-controller="Category"
-                               asp-action="Delete"
-                               asp-route-id="@item.Id"
-                               class="btn btn-outline-danger btn-sm ms-2">
-                               <i class="bi bi-trash"></i> Excluir
-                            </a>
-                        </td>
+                        @if (isAdminOrDeveloper)
+                        {
+                            <td class="text-end">
+                                <a asp-controller="Category"
+                                   asp-action="Edit"
+                                   asp-route-id="@item.Id"
+                                   class="btn btn-outline-primary btn-sm">
+                                    <i class="bi bi-pencil"></i> Editar
+                                </a>
+
+                                <a asp-controller="Category"
+                                   asp-action="Delete"
+                                   asp-route-id="@item.Id"
+                                   class="btn btn-outline-danger btn-sm ms-2">
+                                    <i class="bi bi-trash"></i> Excluir
+                                </a>
+
+                            </td>
+                        }
                     </tr>
                 }
             </tbody>

@@ -1,0 +1,11 @@
+﻿@model dynamic
+
+<div class="col-md-3">
+    <label for="@Model.id" class="form-label">@Model.label</label>
+    @Html.DropDownList(
+            Model.id.ToString(),
+            (IEnumerable<SelectListItem>)Model.selectList,
+            "Selecione uma opção",
+            new { @class = "form-control" }
+            )
+</div>

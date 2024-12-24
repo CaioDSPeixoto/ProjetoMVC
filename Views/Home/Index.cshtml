@@ -1,24 +1,23 @@
 ﻿@using ProjetoMvc.Models.Dto
 @using System.Security.Claims
+@using ProjetoMvc.Validators
 
 @model ContadoresDto
 
 @{
     ViewData["Title"] = "Tela Inicial";
-    var userPermission = User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.Role)?.Value;
-    bool isAdminOrDeveloper = userPermission == "Admin" || userPermission == "Developer";
+    var isAdminOrDeveloper = User.IsAdminOrDeveloper();
+    
 }
 
 <div class="home-index container text-center mt-5">
-    <h1 class="display-4">Bem vindo!!!</h1>
+    <h1 class="display-4">Bem-vindo!!!</h1>
 
-    <div class="row mt-4">
+    <div class="row mt-4 d-flex flex-wrap justify-content-center">
 
         @* card das tarefas *@
-        <div class="col-md-2">
-            <a asp-controller="Todo"
-               asp-action="Index"
-               class="card-link">
+        <div class="col-6 col-sm-6 col-md-3 mb-3">
+            <a asp-controller="Todo" asp-action="Index" class="card-link">
                 <div class="card shadow text-center">
                     <i class="bi bi-list-task" style="font-size: 2rem; color: #007bff;"></i>
                     <div class="card-body">
@@ -34,10 +33,8 @@
         </div>
 
         @* card das categorias *@
-        <div class="col-md-2">
-            <a asp-controller="Category"
-               asp-action="Index"
-               class="card-link">
+        <div class="col-6 col-sm-6 col-md-3 mb-3">
+            <a asp-controller="Category" asp-action="Index" class="card-link">
                 <div class="card shadow text-center">
                     <i class="bi bi-tags" style="font-size: 2rem; color: #007bff;"></i>
                     <div class="card-body">
@@ -56,10 +53,8 @@
         @if (isAdminOrDeveloper)
         {
             @* card dos usuarios *@
-            <div class="col-md-2">
-                <a asp-controller="Account"
-                   asp-action="Index"
-                   class="card-link">
+            <div class="col-6 col-sm-6 col-md-3 mb-3">
+                <a asp-controller="Account" asp-action="Index" class="card-link">
                     <div class="card shadow text-center">
                         <i class="bi bi-person-lock" style="font-size: 2rem; color: #007bff;"></i>
                         <div class="card-body">
@@ -76,10 +71,8 @@
         }
 
         @* card da privacy *@
-        <div class="col-md-2">
-            <a asp-controller="Home"
-               asp-action="Privacy"
-               class="card-link">
+        <div class="col-6 col-sm-6 col-md-3 mb-3">
+            <a asp-controller="Home" asp-action="Privacy" class="card-link">
                 <div class="card shadow text-center">
                     <i class="bi bi-book" style="font-size: 2rem; color: #007bff;"></i>
                     <div class="card-body">

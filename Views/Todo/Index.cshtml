@@ -1,10 +1,15 @@
 ﻿@using ProjetoMvc.Models.Helper
 @using ProjetoMvc.Models.ViewModel
+@using System.Security.Claims
+@using ProjetoMvc.Validators
 
 @model TodoIndexViewModel
 
 @{
     ViewData["Title"] = "Lista de tarefas";
+
+    bool isAdminOrDeveloper = User.IsAdminOrDeveloper();  // Verifica se o usuário é Admin ou Developer
+    var currentUserId = Convert.ToInt32(User.FindFirst(ClaimTypes.NameIdentifier)?.Value); // Obtém o ID do usuário logado
 }
 
 <div class="text-center">
@@ -21,6 +26,10 @@
                         aria-expanded="@(Model.FiltersApplied ? "true" : "false")"
                         aria-controls="collapseOne">
                     Aplicar os Filtros
+                    @if (Model.FiltersApplied)
+                    {
+                        <span class="badge bg-success ms-2">Existe filtros aplicados</span>
+                    }
                 </button>
             </h2>
             <div id="collapseOne" class="accordion-collapse collapse @(Model.FiltersApplied ? "show" : "")"
@@ -28,42 +37,16 @@
                 <div class="accordion-body">
                     <!-- Filtros -->
                     <div class="row mb-4">
-                        <div class="col-md-3">
-                            <label for="searchTitle" class="form-label">Título</label>
-                            <input type="text" id="searchTitle" name="searchTitle" class="form-control" placeholder="Pesquisar título" value="@Model.SearchTitle" />
-                        </div>
-
-                        <div class="col-md-3">
-                            <label for="startDate" class="form-label">Data de Início</label>
-                            <input type="date" id="startDate" name="startDate" class="form-control" value="@Model.StartDate?.ToString("yyyy-MM-dd")" />
-                        </div>
-
-                        <div class="col-md-3">
-                            <label for="endDate" class="form-label">Data de Fim</label>
-                            <input type="date" id="endDate" name="endDate" class="form-control" value="@Model.EndDate?.ToString("yyyy-MM-dd")" />
-                        </div>
-
-                        <div class="col-md-3">
-                            <label for="isFinished" class="form-label">Status da Tarefa</label>
-                            @Html.DropDownList("isFinished", Model.IsFinishedSelectList, "Selecione o status", new { @class = "form-control" })
-                        </div>
+                        @Html.Partial("_FilterField", new { id = "searchTitle", label = "Título", type = "text", placeholder = "Pesquisar título", value = Model.SearchTitle })
+                        @Html.Partial("_FilterField", new { id = "startDate", label = "Data de Início", type = "date", value = Model.StartDate?.ToString("yyyy-MM-dd") })
+                        @Html.Partial("_FilterField", new { id = "endDate", label = "Data de Fim", type = "date", value = Model.EndDate?.ToString("yyyy-MM-dd") })
+                        @Html.Partial("_Dropdown", new { id = "isFinished", label = "Status da Tarefa", selectList = Model.IsFinishedSelectList })
                     </div>
 
                     <div class="row mb-4">
-                        <div class="col-md-3">
-                            <label for="categoryFilter" class="form-label">Categoria</label>
-                            @Html.DropDownList("categoryFilter", Model.Categories, "Selecione a categoria", new { @class = "form-control" })
-                        </div>
-
-                        <div class="col-md-3">
-                            <label for="createdBy" class="form-label">Criado por</label>
-                            @Html.DropDownList("CreatedBy", Model.Users, "Selecione o usuário", new { @class = "form-control" })
-                        </div>
-
-                        <div class="col-md-3">
-                            <label for="assignedTo" class="form-label">Atribuído a</label>
-                            @Html.DropDownList("AssignedTo", Model.Users, "Selecione o usuário", new { @class = "form-control" })
-                        </div>
+                        @Html.Partial("_Dropdown", new { id = "categoryFilter", label = "Categoria", selectList = Model.Categories })
+                        @Html.Partial("_Dropdown", new { id = "CreatedBy", label = "Criado por", selectList = Model.Users })
+                        @Html.Partial("_Dropdown", new { id = "AssignedTo", label = "Atribuído a", selectList = Model.Users })
                     </div>
 
                     <button type="submit" class="btn btn-primary mt-3">Filtrar</button>
@@ -78,6 +61,11 @@
     <div class="row" style="margin-top: 1rem">
         @foreach (var item in Model.Todos)
         {
+            if (!isAdminOrDeveloper && (item.AssignedToUserId != currentUserId && item.CreatedByUserId != currentUserId))
+            {
+                continue; // Pula esta tarefa, caso não seja atribuída ou criada ao usuário logado sem permissão
+            }
+
             <div class="col-md-4 col-sm-6 mb-4">
                 <div class="card shadow d-flex flex-column">
                     <div class="card-body">
@@ -98,19 +86,24 @@
                         }
                         else
                         {
-                            <a asp-controller="Todo"
-                               asp-action="Finish"
-                               asp-route-id="@item.Id"
-                               class="btn btn-success btn-sm"
-                               style="width: 32%;"
-                               onclick="return confirm('Tem certeza que deseja finalizar esta tarefa?');">Finalizar</a>
+                            @if (isAdminOrDeveloper || item.CreatedByUserId == currentUserId)
+                            {
+                                <a asp-controller="Todo"
+                                   asp-action="Finish"
+                                   asp-route-id="@item.Id"
+                                   class="btn btn-success btn-sm"
+                                   style="width: 32%;"
+                                   onclick="return confirm('Tem certeza que deseja finalizar esta tarefa?');">Finalizar</a>
+                            }
                         }
-
-                        <a asp-controller="Todo"
-                           asp-action="Delete"
-                           asp-route-id="@item.Id"
-                           class="btn btn-danger btn-sm"
-                           style="width: 32%;">Excluir</a>
+                        @if (isAdminOrDeveloper || item.CreatedByUserId == currentUserId)
+                        {
+                            <a asp-controller="Todo"
+                               asp-action="Delete"
+                               asp-route-id="@item.Id"
+                               class="btn btn-danger btn-sm"
+                               style="width: 32%;">Excluir</a>
+                        }
                     </div>
                 </div>
             </div>
@@ -165,7 +158,7 @@
                             }
                         </div>
                         <div class="modal-footer justify-content-between">
-                            @if (!item.FinishedAt.HasValue)
+                            @if (!item.FinishedAt.HasValue && (isAdminOrDeveloper || item.CreatedByUserId == currentUserId))
                             {
                                 <a asp-controller="Todo"
                                    asp-action="Edit"
