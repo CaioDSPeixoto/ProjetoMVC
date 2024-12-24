@@ -16,14 +16,7 @@ namespace ProjetoMvc.Controllers
 
         public async Task<IActionResult> Index()
         {
-            var dados = new ContadoresDto()
-            {
-                ContadorTodo = await _context.Todos.CountAsync(),
-                ContadorCategory = await _context.Categories.CountAsync(),
-                ContadorUser = await _context.Users.CountAsync()
-            };
-
-            return View(dados);
+            return View();
         }
 
         public IActionResult Privacy()

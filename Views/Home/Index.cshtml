@@ -2,12 +2,9 @@
 @using System.Security.Claims
 @using ProjetoMvc.Validators
 
-@model ContadoresDto
-
 @{
     ViewData["Title"] = "Tela Inicial";
     var isAdminOrDeveloper = User.IsAdminOrDeveloper();
-    
 }
 
 <div class="home-index container text-center mt-5">
@@ -22,11 +19,6 @@
                     <i class="bi bi-list-task" style="font-size: 2rem; color: #007bff;"></i>
                     <div class="card-body">
                         <h5 class="card-title">Tarefas</h5>
-                        <p class="card-text">
-                            <span class="badge bg-primary" style="font-size: 1.2rem; display: flex; justify-content: center; align-items: center;">
-                                @Model.ContadorTodo
-                            </span>
-                        </p>
                     </div>
                 </div>
             </a>
@@ -39,11 +31,6 @@
                     <i class="bi bi-tags" style="font-size: 2rem; color: #007bff;"></i>
                     <div class="card-body">
                         <h5 class="card-title">Categorias</h5>
-                        <p class="card-text">
-                            <span class="badge bg-primary" style="font-size: 1.2rem; display: flex; justify-content: center; align-items: center;">
-                                @Model.ContadorCategory
-                            </span>
-                        </p>
                     </div>
                 </div>
             </a>
@@ -59,11 +46,6 @@
                         <i class="bi bi-person-lock" style="font-size: 2rem; color: #007bff;"></i>
                         <div class="card-body">
                             <h5 class="card-title">Usuários</h5>
-                            <p class="card-text">
-                                <span class="badge bg-primary" style="font-size: 1.2rem; display: flex; justify-content: center; align-items: center;">
-                                    @Model.ContadorUser
-                                </span>
-                            </p>
                         </div>
                     </div>
                 </a>
