@@ -1,0 +1,105 @@
+﻿@using ProjetoMvc.Models.ViewModel
+@model FinanceViewModel
+
+<div class="container mt-4">
+    <!-- Header Section -->
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2 class="report-title">Relatório Geral - @DateTime.Now.ToString("MMMM yyyy")</h2>
+        <div>
+            <a href="@Url.Action("CreateTransaction")" class="btn btn-primary me-2">
+                <i class="bi bi-cash"></i> Lançar Transação
+            </a>
+        </div>
+    </div>
+
+    <!-- Summary Cards -->
+    <div class="row mb-4">
+
+        <div class="col-md-4">
+            <div class="card text-white bg-success shadow-sm">
+                <div class="card-body">
+                    <h5 class="card-title">Total Recebido</h5>
+                    <p class="card-text fs-4">R$ @Model.Income.ToString("N2")</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-4">
+            <div class="card text-white bg-danger shadow-sm">
+                <div class="card-body">
+                    <h5 class="card-title">Total Gasto</h5>
+                    <p class="card-text fs-4">R$ @Model.Expenses.ToString("N2")</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-4">
+            <div class="card text-white bg-info shadow-sm">
+                <div class="card-body">
+                    <h5 class="card-title">Saldo Final</h5>
+                    <p class="card-text fs-4">R$ @Model.Accounts.Sum(a => a.GetBalanceForUser(Model.UserId)).ToString("N2")</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Accounts Table -->
+    <div class="card shadow-sm">
+        <div class="card-header bg-primary text-white">
+            <h5 class="mb-0">Contas para Lançamento</h5>
+        </div>
+        <div class="card-body">
+            <table class="table table-hover align-middle">
+                <thead class="table-dark">
+                    <tr>
+                        <th>Nome</th>
+                        <th>Valor Atual</th>
+                        <th>Status</th>
+                        <th>Ações</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @if (Model.Accounts.Any())
+                    {
+                        @foreach (var account in Model.Accounts)
+                        {
+                            <tr>
+                                <td>@account.Name</td>
+                                <td>R$ @account.GetBalanceForUser(Model.UserId).ToString("N2")</td>
+                                <td>
+                                    <span class="badge bg-success">
+                                        @account.Status
+                                    </span>
+                                </td>
+                                <td>
+                                    <!-- Botão para ver os lançamentos -->
+                                    <a asp-controller="Finance"
+                                       asp-action="AccountDetails"
+                                       asp-route-id="@account.Id"
+                                       class="btn btn-info btn-sm">
+                                        Lançamentos
+                                    </a>
+                                </td>
+                            </tr>
+                        }
+                    }
+                    else
+                    {
+                        <tr>
+                            <td colspan="3" class="text-center text-muted">Nenhuma conta encontrada.</td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- Voltar Button -->
+    <div class="text-center mt-4">
+        <a asp-controller="Finance"
+           asp-action="IndexCard"
+           class="btn btn-secondary">
+            <i class="bi bi-arrow-left-circle"></i> Voltar
+        </a>
+    </div>
+</div>

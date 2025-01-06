@@ -1,14 +1,12 @@
-﻿
-<div class="collapse navbar-collapse" id="navbarNav">
+﻿<div class="collapse navbar-collapse" id="navbarNav">
     <ul class="navbar-nav ms-auto">
         @if (Context.User.Identity.Name != null)
         {
-
             <li class="nav-item me-3">
                 <span class="nav-link">Olá, <strong>@Context.User.Identity.Name</strong>!</span>
             </li>
             <li class="nav-item">
-                <form asp-controller="Account" asp-action="LogOut" method="post" id="logoutForm" class="d-inline">
+                <form asp-controller="User" asp-action="LogOut" method="post" id="logoutForm" class="d-inline">
                     <button type="submit" class="btn btn-link nav-link">Sair</button>
                 </form>
             </li>
@@ -16,10 +14,10 @@
         else
         {
             <li class="nav-item">
-                <a class="nav-link" asp-controller="Account" asp-action="Registration">Criar Conta</a>
+                <a class="nav-link" asp-controller="User" asp-action="Registration">Criar Conta</a>
             </li>
             <li class="nav-item">
-                <a class="nav-link" asp-controller="Account" asp-action="Login">Entrar</a>
+                <a class="nav-link" asp-controller="User" asp-action="Login">Entrar</a>
             </li>
         }
     </ul>

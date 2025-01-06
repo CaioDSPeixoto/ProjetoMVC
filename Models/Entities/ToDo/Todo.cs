@@ -1,5 +1,4 @@
 ﻿using Microsoft.AspNetCore.Mvc.ModelBinding.Validation;
-using ProjetoMvc.Models.Entities.User;
 using ProjetoMvc.ORM.Entitie;
 using ProjetoMvc.Validators;
 using System.ComponentModel.DataAnnotations;
@@ -11,7 +10,7 @@ namespace ProjetoMvc.Models.Entities.ToDo
         #region Dados das tarefas
         [Display(Name = "Título")]
         [Required(ErrorMessage = "O campo {0} é obrigatório.")]
-        [StringLength(100, MinimumLength = 3, ErrorMessage = "O campo {0} deve ter entre {2} e {1} caracteres.")]
+        [StringLength(100, MinimumLength = 2, ErrorMessage = "O campo {0} deve ter entre {2} e {1} caracteres.")]
         public string Title { get; set; } = string.Empty;
 
         [Display(Name = "Descrição")]
@@ -41,13 +40,13 @@ namespace ProjetoMvc.Models.Entities.ToDo
         public int CreatedByUserId { get; set; }
 
         [ValidateNever]
-        public UserAccount CreatedByUser { get; set; }
+        public User.User CreatedByUser { get; set; }
 
         [Display(Name = "Atribuído a")]
         public int? AssignedToUserId { get; set; }
 
         [ValidateNever]
-        public UserAccount? AssignedToUser { get; set; }
+        public User.User? AssignedToUser { get; set; }
         #endregion
 
         public void Create(int createdByUserId)

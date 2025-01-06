@@ -1,19 +1,13 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 using ProjetoMvc.Models;
-using ProjetoMvc.Models.Dto;
-using ProjetoMvc.ORM.Contexts;
 using System.Diagnostics;
 
 namespace ProjetoMvc.Controllers
 {
     [Authorize]
-    public class HomeController(ILogger<HomeController> logger, AppDbContext todoContext) : Controller
+    public class HomeController() : Controller
     {
-        private readonly AppDbContext _context = todoContext;
-        private readonly ILogger<HomeController> _logger = logger;
-
         public async Task<IActionResult> Index()
         {
             return View();

@@ -7,7 +7,7 @@ using System.ComponentModel.DataAnnotations;
 namespace ProjetoMvc.Models.Entities.User
 {
     [Index(nameof(Email), IsUnique = true)]
-    public class UserAccount : EntityBase
+    public class User : EntityBase
     {
         #region Atributos normais do UserAccount
         [Display(Name = "Primeiro Nome")]
@@ -33,7 +33,7 @@ namespace ProjetoMvc.Models.Entities.User
 
         #region Bloqueio de login
         [Display(Name = "Bloqueado Por")]
-        public UserAccount? BlockedBy { get; set; }
+        public User? BlockedBy { get; set; }
 
         [Display(Name = "Bloqueado Até")]
         [FututeOrPresent]

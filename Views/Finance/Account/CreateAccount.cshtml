@@ -1,0 +1,37 @@
+﻿@using ProjetoMvc.Models.Entities.Payment
+@using ProjetoMvc.Models.Enum
+@model Account
+
+<div class="container mt-4">
+    <h2 class="mb-4 text-primary">Criar Nova Conta</h2>
+
+    <form method="post" class="p-4 border rounded shadow-sm bg-light">
+        <!-- Nome -->
+        <div class="mb-3">
+            <label asp-for="Name" class="form-label fw-bold">Nome</label>
+            <input asp-for="Name" type="text" class="form-control" placeholder="Digite o nome da conta" />
+            <span asp-validation-for="Name" class="text-danger"></span>
+        </div>
+
+        <!-- Status -->
+        <div class="mb-3">
+            <label asp-for="Status" class="form-label fw-bold">Status</label>
+            @Html.DropDownListFor(
+                     model => model.Status,
+                     new SelectList(Enum.GetValues(typeof(AtivoInativoEnum))),
+                     "-- Selecione --",
+                     new { @class = "form-select" })
+            <span asp-validation-for="Status" class="text-danger"></span>
+        </div>
+
+        <!-- Botão Salvar -->
+        <div class="d-flex justify-content-between">
+            <a href="@Url.Action("Index", "Account")" class="btn btn-secondary">
+                <i class="bi bi-arrow-left"></i> Voltar
+            </a>
+            <button type="submit" class="btn btn-primary">
+                <i class="bi bi-save"></i> Salvar
+            </button>
+        </div>
+    </form>
+</div>

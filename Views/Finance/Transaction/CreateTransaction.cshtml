@@ -1,0 +1,106 @@
+﻿@using ProjetoMvc.Models.Entities.Payment
+@using ProjetoMvc.Models.Enum
+@model Transaction
+
+<div class="container mt-4">
+    <h2 class="text-primary mb-4">Adicionar uma Transação</h2>
+
+    <form method="post" class="p-4 border rounded shadow-sm bg-light">
+        <!-- Conta -->
+        <div class="mb-3">
+            <label for="AccountId" class="form-label fw-bold">Conta</label>
+            <select asp-for="AccountId" asp-items="ViewBag.Accounts" class="form-select">
+                <option value="">Selecione uma conta</option>
+            </select>
+            <span asp-validation-for="AccountId" class="text-danger"></span>
+        </div>
+
+        <!-- Descricao -->
+        <div class="mb-3">
+            <label asp-for="Description" class="form-label fw-bold">Descrição</label>
+            <div class="input-group">
+                <textarea asp-for="Description" class="form-control" rows="3"></textarea>
+            </div>
+            <span asp-validation-for="Description" class="text-danger"></span>
+        </div>
+
+        <!-- Valor -->
+        <div class="mb-3">
+            <label asp-for="Amount" class="form-label fw-bold">Valor</label>
+            <div class="input-group">
+                <span class="input-group-text">R$</span>
+                <input asp-for="Amount" type="number" step="0.01" class="form-control" placeholder="Digite o valor" />
+            </div>
+            <span asp-validation-for="Amount" class="text-danger"></span>
+        </div>
+
+        <!-- Tipo -->
+        <div class="mb-3">
+            <label asp-for="Type" class="form-label fw-bold">Tipo</label>
+            <select asp-for="Type" asp-items="ViewBag.TransactionTypes" class="form-select" id="transactionType">
+                <option value="">-- Selecione --</option>
+            </select>
+            <span asp-validation-for="Type" class="text-danger"></span>
+        </div>
+
+        <!-- Agendar Transação -->
+        <div class="form-check mb-3">
+            <input type="checkbox" id="userCreateScheduled" class="form-check-input" />
+            <label for="userCreateScheduled" class="form-check-label fw-bold">Agendar transação?</label>
+        </div>
+
+        <!-- Data da Transação -->
+        <div class="mb-3">
+            <label asp-for="TransactionDate" class="form-label fw-bold">Data da Lançamento</label>
+            <input asp-for="TransactionDate" type="date" class="form-control" id="userCreateTransactionDate" value="@DateTime.Now.ToString("yyyy-MM-dd")" disabled />
+            <span asp-validation-for="TransactionDate" class="text-danger"></span>
+        </div>
+
+        <!-- Repetir todos os meses a transação -->
+        <div class="form-check mb-3">
+            <input asp-for="IsMonthly" type="checkbox" class="form-check-input" />
+            <label asp-for="IsMonthly" class="form-check-label fw-bold">Repetir todos os menses?</label>
+        </div>
+
+        <!-- Data de Vencimento -->
+        <div class="mb-3" id="dueDateField">
+            <label asp-for="DueDate" class="form-label fw-bold">Data de Vencimento</label>
+            <input asp-for="DueDate" type="date" class="form-control" />
+            <span asp-validation-for="DueDate" class="text-danger"></span>
+        </div>
+
+        <!-- Botões -->
+        <div class="d-flex justify-content-between">
+            <a href="@Url.Action("Index", "Transaction")" class="btn btn-secondary">
+                <i class="bi bi-arrow-left"></i> Voltar
+            </a>
+            <button type="submit" class="btn btn-primary">
+                <i class="bi bi-save"></i> Salvar
+            </button>
+        </div>
+    </form>
+</div>
+
+
+<script>
+    document.getElementById("userCreateScheduled").addEventListener("change", function () {
+        const transactionDateInput = document.getElementById("userCreateTransactionDate");
+        if (this.checked) {
+            transactionDateInput.disabled = false;
+        } else {
+            transactionDateInput.disabled = true;
+            transactionDateInput.value = "";
+        }
+    });
+
+    document.getElementById("transactionType").addEventListener("change", function () {
+         const selectedType = this.value; // Obtem o valor selecionado (Credit ou Debit)
+         const dueDateField = document.getElementById("dueDateField");
+
+         if (selectedType === "Credit") { // Verifica se é 'Credit'
+             dueDateField.style.display = "none"; // Oculta o campo de Data de Vencimento
+         } else {
+             dueDateField.style.display = "block"; // Exibe o campo de Data de Vencimento
+         }
+     });
+</script>

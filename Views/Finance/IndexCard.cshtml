@@ -1,0 +1,50 @@
+﻿@using ProjetoMvc.Models.Dto
+@using System.Security.Claims
+@using ProjetoMvc.Validators
+
+@{
+    ViewData["Title"] = "Tela Inicial";
+}
+
+<div class="home-index container text-center mt-5">
+    <h1 class="display-4">Gerencie suas finanças aqui!</h1>
+
+    <div class="row mt-4 d-flex flex-wrap justify-content-center">
+
+        @* card do resumo *@
+        <div class="col-6 col-sm-6 col-md-3 mb-3">
+            <a asp-controller="Finance" asp-action="Index" class="card-link">
+                <div class="card shadow text-center">
+                    <i class="bi-clipboard-data" style="font-size: 2rem; color: #007bff;"></i>
+                    <div class="card-body">
+                        <h5 class="card-title">Resumo</h5>
+                    </div>
+                </div>
+            </a>
+        </div>
+
+        @* card das contas *@
+        <div class="col-6 col-sm-6 col-md-3 mb-3">
+            <a asp-controller="Finance" asp-action="IndexAccount" class="card-link">
+                <div class="card shadow text-center">
+                    <i class="bi bi-bank" style="font-size: 2rem; color: #007bff;"></i>
+                    <div class="card-body">
+                        <h5 class="card-title">Contas</h5>
+                    </div>
+                </div>
+            </a>
+        </div>
+
+        @* card dos lançamentos *@
+        <div class="col-6 col-sm-6 col-md-3 mb-3">
+            <a asp-controller="Finance" asp-action="IndexTransaction" class="card-link">
+                <div class="card shadow text-center">
+                    <i class="bi bi-cash-coin" style="font-size: 2rem; color: #007bff;"></i>
+                    <div class="card-body">
+                        <h5 class="card-title">Lançamentos</h5>
+                    </div>
+                </div>
+            </a>
+        </div>
+    </div>
+</div>

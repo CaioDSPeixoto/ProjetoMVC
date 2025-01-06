@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using ProjetoMvc.ORM.Contexts;
 
@@ -10,14 +11,16 @@ using ProjetoMvc.ORM.Contexts;
 namespace ProjetoMvc.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class TodoContextModelSnapshot : ModelSnapshot
+    [Migration("20250106180455_InitialMigration")]
+    partial class InitialMigration
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder.HasAnnotation("ProductVersion", "9.0.0");
 
-            modelBuilder.Entity("ProjetoMvc.Models.Entities.ToDo.Category", b =>
+            modelBuilder.Entity("ProjetoMvc.Models.Entities.Category", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -35,6 +38,84 @@ namespace ProjetoMvc.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("Category", (string)null);
+                });
+
+            modelBuilder.Entity("ProjetoMvc.Models.Entities.Payment.Account", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("INTEGER");
+
+                    b.Property<decimal>("Balance")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("TEXT");
+
+                    b.Property<int>("Status")
+                        .HasColumnType("INTEGER");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Account", (string)null);
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 101,
+                            Balance = 0m,
+                            Name = "Contas Fixas",
+                            Status = 1
+                        },
+                        new
+                        {
+                            Id = 102,
+                            Balance = 0m,
+                            Name = "Contas Variáveis",
+                            Status = 1
+                        },
+                        new
+                        {
+                            Id = 103,
+                            Balance = 0m,
+                            Name = "Investimentos",
+                            Status = 1
+                        });
+                });
+
+            modelBuilder.Entity("ProjetoMvc.Models.Entities.Payment.Transaction", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("INTEGER");
+
+                    b.Property<int>("AccountId")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<decimal>("Amount")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("Description")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("TEXT");
+
+                    b.Property<DateTime?>("DueDate")
+                        .HasColumnType("TEXT");
+
+                    b.Property<DateTime>("TransactionDate")
+                        .HasColumnType("TEXT");
+
+                    b.Property<int>("Type")
+                        .HasColumnType("INTEGER");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("AccountId");
+
+                    b.ToTable("Transaction", (string)null);
                 });
 
             modelBuilder.Entity("ProjetoMvc.Models.Entities.ToDo.Todo", b =>
@@ -80,7 +161,7 @@ namespace ProjetoMvc.Migrations
                     b.ToTable("Todos");
                 });
 
-            modelBuilder.Entity("ProjetoMvc.Models.Entities.User.UserAccount", b =>
+            modelBuilder.Entity("ProjetoMvc.Models.Entities.User.User", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -121,21 +202,32 @@ namespace ProjetoMvc.Migrations
                     b.ToTable("User", (string)null);
                 });
 
+            modelBuilder.Entity("ProjetoMvc.Models.Entities.Payment.Transaction", b =>
+                {
+                    b.HasOne("ProjetoMvc.Models.Entities.Payment.Account", "Account")
+                        .WithMany("Transactions")
+                        .HasForeignKey("AccountId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Account");
+                });
+
             modelBuilder.Entity("ProjetoMvc.Models.Entities.ToDo.Todo", b =>
                 {
-                    b.HasOne("ProjetoMvc.Models.Entities.User.UserAccount", "AssignedToUser")
-                        .WithMany("AssignedTodos")
+                    b.HasOne("ProjetoMvc.Models.Entities.User.User", "AssignedToUser")
+                        .WithMany()
                         .HasForeignKey("AssignedToUserId")
                         .OnDelete(DeleteBehavior.Restrict);
 
-                    b.HasOne("ProjetoMvc.Models.Entities.ToDo.Category", "Category")
+                    b.HasOne("ProjetoMvc.Models.Entities.Category", "Category")
                         .WithMany()
                         .HasForeignKey("CategoryId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
-                    b.HasOne("ProjetoMvc.Models.Entities.User.UserAccount", "CreatedByUser")
-                        .WithMany("CreatedTodos")
+                    b.HasOne("ProjetoMvc.Models.Entities.User.User", "CreatedByUser")
+                        .WithMany()
                         .HasForeignKey("CreatedByUserId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
@@ -147,9 +239,9 @@ namespace ProjetoMvc.Migrations
                     b.Navigation("CreatedByUser");
                 });
 
-            modelBuilder.Entity("ProjetoMvc.Models.Entities.User.UserAccount", b =>
+            modelBuilder.Entity("ProjetoMvc.Models.Entities.User.User", b =>
                 {
-                    b.HasOne("ProjetoMvc.Models.Entities.User.UserAccount", "BlockedBy")
+                    b.HasOne("ProjetoMvc.Models.Entities.User.User", "BlockedBy")
                         .WithMany()
                         .HasForeignKey("BlockedById")
                         .OnDelete(DeleteBehavior.Restrict);
@@ -157,11 +249,9 @@ namespace ProjetoMvc.Migrations
                     b.Navigation("BlockedBy");
                 });
 
-            modelBuilder.Entity("ProjetoMvc.Models.Entities.User.UserAccount", b =>
+            modelBuilder.Entity("ProjetoMvc.Models.Entities.Payment.Account", b =>
                 {
-                    b.Navigation("AssignedTodos");
-
-                    b.Navigation("CreatedTodos");
+                    b.Navigation("Transactions");
                 });
 #pragma warning restore 612, 618
         }

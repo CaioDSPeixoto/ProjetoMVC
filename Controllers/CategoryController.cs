@@ -2,7 +2,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using ProjetoMvc.Models;
-using ProjetoMvc.Models.Entities.ToDo;
+using ProjetoMvc.Models.Entities;
 using ProjetoMvc.Models.Helper;
 using ProjetoMvc.ORM.Contexts;
 using System.Diagnostics;

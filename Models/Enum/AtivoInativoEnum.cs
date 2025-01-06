@@ -1,8 +1,13 @@
-﻿namespace ProjetoMvc.Models.Enum
+﻿using System.ComponentModel.DataAnnotations;
+
+namespace ProjetoMvc.Models.Enum
 {
     public enum AtivoInativoEnum
     {
-        Inativo,
-        Ativo
+        [Display(Name = "Inativo")]
+        Inactive,
+
+        [Display(Name = "Ativo")]
+        Active
     }
 }

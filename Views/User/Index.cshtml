@@ -1,5 +1,5 @@
 ﻿@using ProjetoMvc.Models.Helper
-@model IEnumerable<ProjetoMvc.Models.Entities.User.UserAccount>
+@model IEnumerable<ProjetoMvc.Models.Entities.User.User>
 
 @{
     ViewData["Title"] = "Lista de Usuários";
@@ -41,7 +41,7 @@
                                 : string.Empty)
                         </td>
                         <td class="text-end">
-                            <a asp-controller="Account"
+                            <a asp-controller="User"
                                asp-action="Edit"
                                asp-route-id="@item.Id"
                                class="btn btn-outline-primary btn-sm">
@@ -49,7 +49,7 @@
                             </a>
                             @if (item.BlockedBy != null)
                             {
-                                <form asp-controller="Account" asp-action="UnblockUser" method="post" style="display:inline;">
+                                <form asp-controller="User" asp-action="UnblockUser" method="post" style="display:inline;">
                                     <input type="hidden" name="id" value="@item.Id" />
                                     <button type="submit" class="btn btn-outline-success btn-sm">
                                         <i class="bi bi-unlock"></i> Desbloquear
@@ -69,7 +69,7 @@
                     <div class="modal fade" id="blockUserModal-@item.Id" tabindex="-1" aria-labelledby="blockUserModalLabel" aria-hidden="true">
                         <div class="modal-dialog">
                             <div class="modal-content">
-                                <form asp-controller="Account" asp-action="BlockUser" method="post">
+                                <form asp-controller="User" asp-action="BlockUser" method="post">
                                     <div class="modal-header">
                                         <h5 class="modal-title" id="blockUserModalLabel">Bloquear Usuário</h5>
                                         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>

@@ -12,7 +12,7 @@ using System.Security.Claims;
 
 namespace ProjetoMvc.Controllers
 {
-    public class AccountController(AppDbContext context) : Controller
+    public class UserController(AppDbContext context) : Controller
     {
         private readonly AppDbContext _context = context;
 
@@ -36,7 +36,7 @@ namespace ProjetoMvc.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> Edit(UserAccount user)
+        public async Task<IActionResult> Edit(User user)
         {
             if (ModelState.IsValid)
             {
@@ -144,9 +144,9 @@ namespace ProjetoMvc.Controllers
         {
             if (ModelState.IsValid)
             {
-                var passwordHasher = new PasswordHasher<UserAccount>();
+                var passwordHasher = new PasswordHasher<User>();
 
-                UserAccount account = new()
+                User account = new()
                 {
                     Email = registration.Email,
                     FirstName = registration.FirstName,
@@ -211,7 +211,7 @@ namespace ProjetoMvc.Controllers
                         return View(login);
                     }
 
-                    var passwordHasher = new PasswordHasher<UserAccount>();
+                    var passwordHasher = new PasswordHasher<User>();
                     var verificationResult = passwordHasher.VerifyHashedPassword(null, user.Password, login.Password);
 
                     if (verificationResult == PasswordVerificationResult.Success)
@@ -256,13 +256,13 @@ namespace ProjetoMvc.Controllers
             return View();
         }
 
-        private void AtualizaOsCamposDoUsuario(UserAccount user, UserAccount? existingUser)
+        private void AtualizaOsCamposDoUsuario(User user, User? existingUser)
         {
             _context.Entry(existingUser).CurrentValues.SetValues(user);
 
             if (!string.IsNullOrEmpty(user.Password))
             {
-                var passwordHasher = new PasswordHasher<UserAccount>();
+                var passwordHasher = new PasswordHasher<User>();
                 existingUser.Password = passwordHasher.HashPassword(null, user.Password);
             }
             else

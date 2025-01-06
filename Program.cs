@@ -16,6 +16,9 @@ builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationSc
 
     // Se o SlidingExpiration estiver como false, mesmo com o usuário ativo na seção será redirecionado para o login.
     options.SlidingExpiration = false;
+
+    options.LoginPath = "/User/Login"; // Caminho para o login
+    options.LogoutPath = "/User/LogOut"; // Caminho para o logout
 });
 
 builder.Services.AddAuthorization(options =>

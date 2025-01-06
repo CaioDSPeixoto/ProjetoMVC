@@ -41,7 +41,7 @@
         {
             @* card dos usuarios *@
             <div class="col-6 col-sm-6 col-md-3 mb-3">
-                <a asp-controller="Account" asp-action="Index" class="card-link">
+                <a asp-controller="User" asp-action="Index" class="card-link">
                     <div class="card shadow text-center">
                         <i class="bi bi-person-lock" style="font-size: 2rem; color: #007bff;"></i>
                         <div class="card-body">
@@ -51,6 +51,18 @@
                 </a>
             </div>
         }
+
+        @* card das finanças *@
+        <div class="col-6 col-sm-6 col-md-3 mb-3">
+            <a asp-controller="Finance" asp-action="IndexCard" class="card-link">
+                <div class="card shadow text-center">
+                    <i class="bi bi-cash-coin" style="font-size: 2rem; color: #007bff;"></i>
+                    <div class="card-body">
+                        <h5 class="card-title">Finanças</h5>
+                    </div>
+                </div>
+            </a>
+        </div>
 
         @* card da privacy *@
         <div class="col-6 col-sm-6 col-md-3 mb-3">

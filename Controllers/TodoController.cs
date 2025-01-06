@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using ProjetoMvc.Models;
 using ProjetoMvc.Models.Dto;
+using ProjetoMvc.Models.Entities;
 using ProjetoMvc.Models.Entities.ToDo;
 using ProjetoMvc.Models.Helper;
 using ProjetoMvc.Models.ViewModel;
@@ -14,9 +15,9 @@ using System.Security.Claims;
 namespace ProjetoMvc.Controllers
 {
     [Authorize]
-    public class TodoController(ILogger<TodoController> logger, AppDbContext todoContext) : Controller
+    public class TodoController(ILogger<TodoController> logger, AppDbContext context) : Controller
     {
-        private readonly AppDbContext _context = todoContext;
+        private readonly AppDbContext _context = context;
         private readonly ILogger<TodoController> _logger = logger;
 
         #region Métodos Publicos
@@ -59,7 +60,7 @@ namespace ProjetoMvc.Controllers
             if (categories == null || categories.Count == 0)
             {
                 MessageHelper.Error(TempData, "Nenhuma categoria encontrada. Crie uma categoria antes de adicionar uma tarefa.");
-                return RedirectToAction("Create", "Category");
+                return RedirectToAction("Create", "Category", new { source = "todo" });
             }
 
             await AdicionarViewBagDeCategorias(categories);
